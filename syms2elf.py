@@ -4,8 +4,8 @@
 #  sym2elf
 #  28/11/2014
 #
-#  Daniel García <danigargu [at] gmail.com>
-#  Jesús Olmos   <sha0 [at] badchecksum.net>
+#  Daniel GarcÃ­a <danigargu [at] gmail.com>
+#  JesÃºs Olmos   <sha0 [at] badchecksum.net>
 #
 #  ELF parser - based on the lib of ROPgadget tool by Jonathan Salwan
 #  http://shell-storm.org/project/ROPgadget/
@@ -28,7 +28,7 @@ from struct    import unpack
 USE_R2  = False
 USE_IDA = False
 
-if "IDA_SDK_VERSION" in globals():
+if "IDAPYTHON_VERSION" in globals():
     USE_IDA = True
 elif "radare2" in os.environ.get('PATH',''):
     USE_R2  = True
@@ -713,9 +713,10 @@ if USE_IDA:
     from idc import *
     from idaapi import *
     from idautils import *
-
+    
     class Syms2Elf(Form):
         def __init__(self):
+            print("here")
             Form.__init__(self, r"""syms2elf
         {formChangeCb}
         <#Output file#Output ~f~ile:{txtFile}>
@@ -775,7 +776,9 @@ if USE_IDA:
             pass
 
     def PLUGIN_ENTRY():
-        return Syms2Elf_t()
+        return Syms2Elf_t().run()
+    
+    PLUGIN_ENTRY()
 
 elif USE_R2:
 
