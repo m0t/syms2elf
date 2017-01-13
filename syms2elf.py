@@ -511,7 +511,7 @@ class ELF:
             if   self.ei_data == ELFFlags.ELFDATA2LSB: sh = Elf64_Shdr_LSB()
             elif self.ei_data == ELFFlags.ELFDATA2MSB: sh = Elf64_Shdr_MSB()
 
-        sh.sh_name      = section["name"]
+        sh.sh_name      = section["name"] #XXX incorrect name is added
         sh.sh_type      = section["type"]
         sh.sh_flags     = section["flags"]
         sh.sh_addr      = section["addr"]
@@ -678,7 +678,7 @@ def get_ida_symbols():
 
         fn_name = GetFunctionName(f)
         symbols.append(Symbol(fn_name, STB_GLOBAL_FUNC, 
-            int(func.startEA), int(func.size()), seg_name))
+            int(func.startEA-idaapi.get_imagebase()), int(func.size()), seg_name))
 
     return symbols
 
@@ -716,7 +716,6 @@ if USE_IDA:
     
     class Syms2Elf(Form):
         def __init__(self):
-            print("here")
             Form.__init__(self, r"""syms2elf
         {formChangeCb}
         <#Output file#Output ~f~ile:{txtFile}>
