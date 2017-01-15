@@ -669,7 +669,7 @@ def ida_fcn_filter(func_ea):
         return True
     return False 
 
-def get_ida_symbols():
+def get_ida_symbols(baseAddr):
     symbols = []
 
     for f in filter(ida_fcn_filter, Functions()):
@@ -678,9 +678,8 @@ def get_ida_symbols():
 
         fn_name = GetFunctionName(f)
         symbols.append(Symbol(fn_name, STB_GLOBAL_FUNC, 
-            int(func.startEA), int(func.size()), seg_name))
-            #XXX in shared libs or pie, should probably ignore base address
-            #int(func.startEA-idaapi.get_imagebase()), int(func.size()), seg_name))
+            #int(func.startEA), int(func.size()), seg_name))
+            int(func.startEA-idaapi.get_imagebase()+baseAddr), int(func.size()), seg_name))
 
     return symbols
 
@@ -720,8 +719,10 @@ if USE_IDA:
         def __init__(self):
             Form.__init__(self, r"""syms2elf
         {formChangeCb}
+        <#Base Address:{baseAddr}>
         <#Output file#Output ~f~ile:{txtFile}>
         """, {
+            'baseAddr' : Form.NumericInput(tp=Form.FT_ADDR,value=idaapi.get_imagebase()),
             'formChangeCb' : Form.FormChangeCb(self.OnFormChange),
             'txtFile' : Form.FileInput(save=True, swidth=50)
         })
@@ -768,7 +769,8 @@ if USE_IDA:
             f = Syms2Elf()
 
             if f.Show():
-                symbols = get_ida_symbols()
+                baseAddr = f.baseAddr.value
+                symbols = get_ida_symbols(baseAddr)
                 output_file = f.txtFile.value
                 write_symbols(f.input_elf, output_file, symbols)
                 f.Free()
