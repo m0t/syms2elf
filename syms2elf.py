@@ -678,7 +678,9 @@ def get_ida_symbols():
 
         fn_name = GetFunctionName(f)
         symbols.append(Symbol(fn_name, STB_GLOBAL_FUNC, 
-            int(func.startEA-idaapi.get_imagebase()), int(func.size()), seg_name))
+            int(func.startEA), int(func.size()), seg_name))
+            #XXX in shared libs or pie, should probably ignore base address
+            #int(func.startEA-idaapi.get_imagebase()), int(func.size()), seg_name))
 
     return symbols
 
