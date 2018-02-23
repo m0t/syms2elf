@@ -779,7 +779,7 @@ if USE_IDA:
             pass
 
     def PLUGIN_ENTRY():
-        return Syms2Elf_t().run()
+        return Syms2Elf_t()
     
     PLUGIN_ENTRY()
 
